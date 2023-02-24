@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "web-ext-plugin": "^2.7.0",
+    "webextension-polyfill": "^0.10.0"
+  }
+}
