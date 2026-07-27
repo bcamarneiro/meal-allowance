@@ -13,14 +13,14 @@ function interceptAssests(details) {
       filter.write(encoder.encode(str));
     }
 
-        filter.onstop = (event) => {
-            const message = {request: "assets", data}
-            const parsed = JSON.parse(data);
-            console.log("🚀 ~ file: background_script.js:20 ~ listener ~ str:", parsed);
-            browser.storage.local.set({ pendingExpense: { raw: parsed, detectedAt: Date.now() } });
-            browser.runtime.sendMessage("MEAL_ALLOWANCE", { type: "FROM_MEAL_ALLOWANCE", text: JSON.stringify(message)})
-            filter.close();
-        };
+    filter.onstop = (event) => {
+        const message = {request: "assets", data: data};
+        const parsed = JSON.parse(data);
+        console.log("🚀 ~ file: background_script.js:20 ~ listener ~ str:", parsed);
+        browser.storage.local.set({ pendingExpense: { raw: parsed, detectedAt: Date.now() } });
+        browser.runtime.sendMessage("MEAL_ALLOWANCE", { type: "FROM_MEAL_ALLOWANCE", text: JSON.stringify(message)})
+        filter.close();
+    };
   
     return {};
   }

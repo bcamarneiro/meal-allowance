@@ -48,6 +48,14 @@
     categorySelect.value = pending.category || lastCategory;
     let tags = new Set(pending.tags || lastTags);
 
+    // Persist draft state to pendingExpense so it survives popup closes
+    const saveDraft = async () => {
+      const current = await getPending();
+      if (current) {
+        await setPending({ ...current, category: categorySelect.value, tags: Array.from(tags) });
+      }
+    };
+
     const renderTags = () => {
       tagList.innerHTML = "";
       tags.forEach(tag => {
@@ -57,9 +65,10 @@
         const close = document.createElement("span");
         close.className = "tag-close";
         close.textContent = "×";
-        close.addEventListener("click", () => {
+        close.addEventListener("click", async () => {
           tags.delete(tag);
           renderTags();
+          await saveDraft();
         });
         span.appendChild(close);
         tagList.appendChild(span);
@@ -67,16 +76,21 @@
     };
     renderTags();
 
-    tagInput.addEventListener("keydown", (e) => {
+    tagInput.addEventListener("keydown", async (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         const raw = tagInput.value.trim();
         if (raw) {
-          raw.split(", ").forEach(t => tags.add(t));
+          raw.split(",").map(t => t.trim()).filter(Boolean).forEach(t => tags.add(t));
           tagInput.value = "";
           renderTags();
+          await saveDraft();
         }
       }
+    });
+
+    categorySelect.addEventListener("change", async () => {
+      await saveDraft();
     });
 
     saveBtn.addEventListener("click", async () => {
